@@ -19,7 +19,7 @@ function App() {
   const [readMarblePrivateDetailsdata, setreadMarblePrivateDetailsData] = React.useState('');
   
   
-  const [getMarblesByRangedata, setgetMarblesByRangeData] = React.useState('');
+  const [getMarblesByRangedata, setgetMarblesByRangeData] = React.useState(null);
   const [marbleNameRange1, setmarbleNameRange1] = React.useState('');
   const [marbleNameRange2, setmarbleNameRange2] = React.useState(''); 
   
@@ -140,7 +140,8 @@ function App() {
         return res.json();
       })
       .then((data) => {
-        setgetMarblesByRangeData(data.response);
+        let parsedData = JSON.parse(data.response);
+        setgetMarblesByRangeData(parsedData);
       })
       .catch((error) => {
         console.error('Error fetching marbles by range:', error);
@@ -295,7 +296,7 @@ function App() {
   </div>
 
   {/* we will map getMarblesByRangeData here - an array of objects Key (same as Record.name) and Record (object containing all the data) */}
-  {getMarblesByRangedata && getMarblesByRangedata.map((marble, index) => (
+  {getMarblesByRangedata && getMarblesByRangedata?.map((marble, index) => (
     <MarbleDataDisplay key={marble.key} marbleName={marble.Record.name} marbleData={marble.Record} />
   ))}
 
