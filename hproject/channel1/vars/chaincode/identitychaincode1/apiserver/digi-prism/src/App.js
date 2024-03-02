@@ -128,7 +128,10 @@ function App() {
   
   
   const getMarblesByRange = () => {
-    fetch(`/api/getMarblesByRange/${marbleNameRange1}/${marbleNameRange2}`)
+    const url = (`/api/getMarblesByRange/marble${marbleNameRange1}/marble${marbleNameRange2}`)
+     //console.log("Fetching data from:", url);
+     
+     fetch(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to fetch data');
@@ -140,7 +143,7 @@ function App() {
       })
       .catch((error) => {
         console.error('Error fetching marbles by range:', error);
-        // Handle error state or display error message as needed
+        
       });
 };
 
@@ -234,7 +237,12 @@ function App() {
   {readMarbledata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
-        Response: {readMarbledata}
+        <strong>Read Credentials:</strong> <br /> 
+        Age: {JSON.parse(readMarbledata).age},<br />
+        City: {JSON.parse(readMarbledata).city},<br />
+        DOB: {JSON.parse(readMarbledata).dob},<br />
+        Owner: {JSON.parse(readMarbledata).owner},<br />
+        Postcode: {JSON.parse(readMarbledata).postcode}
       </div>
     </div>
   )}
@@ -242,12 +250,17 @@ function App() {
   {readMarblePrivateDetailsdata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
-        Response: {readMarblePrivateDetailsdata}
+        <strong>Read Private Details:</strong> <br /> 
+        Address: {JSON.parse(readMarblePrivateDetailsdata).address},<br />
+        CreditScore: {JSON.parse(readMarblePrivateDetailsdata).creditscore},<br />
+        NI: {JSON.parse(readMarblePrivateDetailsdata).ni},<br />
+        Passport: {JSON.parse(readMarblePrivateDetailsdata).passport}
       </div>
     </div>
   )}
 </div>
 
+ <br /> 
     
 {/* ------------------------------------------------------------------ */ }
 
@@ -260,7 +273,7 @@ function App() {
         id="marbleNameRange1"
         value={marbleNameRange1}
         onChange={e => setmarbleNameRange1(e.target.value)}
-        style={{ padding: '8px', borderRadius: '5px', border: '1px solid #ccc', width: '200px' }}
+        style={{ padding: '6px', borderRadius: '5px', border: '1px solid #ccc', width: '200px' }}
       />
     </div>
     
@@ -271,7 +284,7 @@ function App() {
         id="marbleNameRange2"
         value={marbleNameRange2}
         onChange={e => setmarbleNameRange2(e.target.value)}
-        style={{ padding: '8px', borderRadius: '5px', border: '1px solid #ccc', width: '200px' }}
+        style={{ padding: '6px', borderRadius: '5px', border: '1px solid #ccc', width: '200px' }}
       />
     </div>
   </div>
@@ -296,15 +309,15 @@ function App() {
    {/* ------------------------------------------------------------------ */ } 
   
   
-      <form onSubmit={transferMarble} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', margin: 'auto' }}>
+      <form onSubmit={transferMarble} style={{ display: 'flex', flexDirection: 'column', maxWidth: '200px', margin: 'auto' }}>
   <label style={{ fontSize: '14px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>
     <input type="text" name="name" value={transferMarbleformData.name || ''} onChange={handleFormChange} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', flex: '1' }} />
-    <span>Name:</span>
+    <span>ID</span>
   </label>
 
   <label style={{ fontSize: '14px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>
     <input type="text" name="owner" value={transferMarbleformData.owner || ''} onChange={handleFormChange} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', flex: '1' }} />
-    <span>Owner:</span>
+    <span>Owner</span>
   </label>
 
   
@@ -328,7 +341,7 @@ function App() {
       <div className="right-column"> 
    
    
-      <form onSubmit={initMarble} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', margin: 'auto' }}>
+      <form onSubmit={initMarble} style={{ display: 'flex', flexDirection: 'column', maxWidth: '200px', margin: 'auto' }}>
   <label style={{ fontSize: '14px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>
     <input type="text" name="name" value={initMarbleformData.name || ''} onChange={handleFormChange} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', flex: '1' }} />
     <span>Name:</span>
@@ -383,6 +396,7 @@ function App() {
   
 )}
 
+<br />
 
 {/* ------------------------------------------------------------------ */ }
 

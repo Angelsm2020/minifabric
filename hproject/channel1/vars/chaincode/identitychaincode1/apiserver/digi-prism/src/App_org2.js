@@ -225,7 +225,7 @@ function App() {
   {readMarbledata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', fontSize: '20px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}><br />
-        <strong>Read Marble Data:</strong> <br /> 
+        <strong>Read Credentials:</strong> <br /> 
         Age: {JSON.parse(readMarbledata).age},<br />
         City: {JSON.parse(readMarbledata).city},<br />
         DOB: {JSON.parse(readMarbledata).dob},<br />
@@ -240,7 +240,7 @@ function App() {
   {readMarblePrivateDetailsdata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', fontSize: '20px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
-        <strong>Read Marble Private Details Data:</strong> <br /> 
+        <strong>Read Private Details:</strong> <br /> 
         Address: {JSON.parse(readMarblePrivateDetailsdata).address},<br />
         CreditScore: {JSON.parse(readMarblePrivateDetailsdata).creditscore},<br />
         NI: {JSON.parse(readMarblePrivateDetailsdata).ni},<br />
