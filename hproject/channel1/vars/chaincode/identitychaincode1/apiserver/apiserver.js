@@ -228,7 +228,11 @@ app.post('/api/transferMarble/', async function (req, res) {
         // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
         // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR10', 'Dave')
         
-        const encodedMarble = btoa(JSON.stringify(req.body))
+        //console.log(req.body);
+        //let { name, owner } = req.body;
+        //name = 'marble' + name;
+        
+        const encodedMarble = btoa(JSON.stringify(req.body));
         //console.log('encodedMarble: ', encodedMarble);
         const result = await contract.createTransaction('transferMarble').setTransient({marble_owner: encodedMarble}).submit();
         

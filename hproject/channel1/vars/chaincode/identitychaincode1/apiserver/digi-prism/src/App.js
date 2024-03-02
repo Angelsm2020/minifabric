@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import axios from "axios";
 import { useAuth0 } from '@auth0/auth0-react';
+import MarbleDataDisplay from "./MarbleDataDispolay";
 
 function App() {
 
@@ -12,13 +13,28 @@ function App() {
   const [readMarbledata, setreadMarbleData] = React.useState('');
   const [marbleName, setmarbleName] = React.useState('');
   
+  const [readMarbleDataVisible, setReadMarbleDataVisible] = React.useState(false);
+  const [readMarblePrivateDetailsDataVisible, setReadMarblePrivateDetailsDataVisible] = React.useState(false);
+  
+  const [marbleDataVisible, setMarbleDataVisible] = React.useState(false);
+  
+
+  const toggleReadMarbleDataVisibility = () => {
+    setReadMarbleDataVisible(!readMarbleDataVisible);
+  };
+
+  const toggleReadMarblePrivateDetailsDataVisibility = () => {
+    setReadMarblePrivateDetailsDataVisible(!readMarblePrivateDetailsDataVisible);
+  };
+
+  
   const [deleteMarbledata, setdeleteMarbleData] = React.useState('');
   const [deletemarbleName, setdeletemarbleName] = React.useState('');
   
   const [readMarblePrivateDetailsdata, setreadMarblePrivateDetailsData] = React.useState('');
   
   
-  const [getMarblesByRangedata, setgetMarblesByRangeData] = React.useState('');
+  const [getMarblesByRangedata, setgetMarblesByRangeData] = React.useState(null);
   const [marbleNameRange1, setmarbleNameRange1] = React.useState('');
   const [marbleNameRange2, setmarbleNameRange2] = React.useState(''); 
   
@@ -90,8 +106,8 @@ function App() {
             setdeleteMarbleData('Marble name cannot be empty');
             return;
         }
-            const encodedMarble = btoa(JSON.stringify({ name: deletemarbleName }));
-            const response = await axios.post('/api/deleteMarble/', { name: deletemarbleName });
+            const encodedMarble = btoa(JSON.stringify({ name: `marble${deletemarbleName}` }));
+            const response = await axios.post('/api/deleteMarble/', { name: `marble${deletemarbleName}` });
             setdeleteMarbleData(response.data);
         } catch (error) {
             console.error('Error deleting marble:', error);
@@ -139,12 +155,14 @@ function App() {
         return res.json();
       })
       .then((data) => {
-        setgetMarblesByRangeData(data.response);
+        let parsedData = JSON.parse(data.response);
+        setgetMarblesByRangeData(parsedData);
       })
       .catch((error) => {
         console.error('Error fetching marbles by range:', error);
+        });
         
-      });
+      setMarbleDataVisible(!marbleDataVisible);
 };
 
   
@@ -163,8 +181,12 @@ function App() {
     
   const initMarble = (e) => {
     e.preventDefault();
+    const modifiedFormData = {
+    ...initMarbleformData,
+    name: 'marble' + initMarbleformData.name
+  };
     // Make API request to Node.js server with formData in the request body
-    axios.post('/api/initMarble', initMarbleformData)
+    axios.post('/api/initMarble', modifiedFormData)
       .then(response => {
         // Set the response in state
         setinitMarbleResponse(response.data);
@@ -184,8 +206,9 @@ function App() {
     
   const transferMarble = (e) => {
     e.preventDefault();
+    const formDataWithPrefix = { ...transferMarbleformData, name: `marble${transferMarbleformData.name}` };
     // Make API request to Node.js server with formData in the request body
-    axios.post('/api/transferMarble', transferMarbleformData)
+    axios.post('/api/transferMarble', formDataWithPrefix)
       .then(response => {
         // Set the response in state
         settransferMarbleResponse(response.data);
@@ -229,32 +252,46 @@ function App() {
       onChange={e => setmarbleName(e.target.value)}
     />
 
-    <button style={{ marginLeft: '10px', backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} onClick={getreadMarble}>readMarble</button>
+    <button 
+      style={{ marginLeft: '10px', backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} 
+      onClick={() => {
+        getreadMarble();
+        toggleReadMarbleDataVisibility();
+      }}>
+      readMarble
+    </button>
 
-    <button style={{ marginLeft: '10px', backgroundColor: 'green', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} onClick={getreadMarblePrivateDetails}>readMarblePrivateDetails</button>
+    <button style={{ marginLeft: '10px', backgroundColor: 'green', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} 
+    onClick={() => {
+        getreadMarblePrivateDetails();
+        toggleReadMarblePrivateDetailsDataVisibility();
+      }}>
+      readMarblePrivateDetails
+    </button>
+       
   </div>
 
-  {readMarbledata && (
+  {readMarbleDataVisible && readMarbledata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
         <strong>Read Credentials:</strong> <br /> 
-        Age: {JSON.parse(readMarbledata).age},<br />
-        City: {JSON.parse(readMarbledata).city},<br />
-        DOB: {JSON.parse(readMarbledata).dob},<br />
-        Owner: {JSON.parse(readMarbledata).owner},<br />
-        Postcode: {JSON.parse(readMarbledata).postcode}
+        <strong>Age:</strong> {JSON.parse(readMarbledata).age},<br />
+        <strong>City:</strong> {JSON.parse(readMarbledata).city},<br />
+        <strong>DOB:</strong> {JSON.parse(readMarbledata).dob},<br />
+        <strong>Owner:</strong> {JSON.parse(readMarbledata).owner},<br />
+        <strong>Postcode:</strong> {JSON.parse(readMarbledata).postcode}
       </div>
     </div>
   )}
 
-  {readMarblePrivateDetailsdata && (
+  {readMarblePrivateDetailsDataVisible && readMarblePrivateDetailsdata && (
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
       <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
         <strong>Read Private Details:</strong> <br /> 
-        Address: {JSON.parse(readMarblePrivateDetailsdata).address},<br />
-        CreditScore: {JSON.parse(readMarblePrivateDetailsdata).creditscore},<br />
-        NI: {JSON.parse(readMarblePrivateDetailsdata).ni},<br />
-        Passport: {JSON.parse(readMarblePrivateDetailsdata).passport}
+        <strong>Address:</strong> {JSON.parse(readMarblePrivateDetailsdata).address},<br />
+        <strong>CreditScore:</strong> {JSON.parse(readMarblePrivateDetailsdata).creditscore},<br />
+        <strong>NI:</strong> {JSON.parse(readMarblePrivateDetailsdata).ni},<br />
+        <strong>Passport:</strong> {JSON.parse(readMarblePrivateDetailsdata).passport}
       </div>
     </div>
   )}
@@ -290,21 +327,22 @@ function App() {
   </div>
   
   <div style={{ textAlign: 'center' }}>
-    <button style={{ backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} onClick={getMarblesByRange}>getMarblesByRange</button>
+    <button 
+    style={{ backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} 
+    onClick={getMarblesByRange}>
+    {marbleDataVisible ? 'Hide Marbles' : 'Show Marbles'}
+    </button>
   </div>
-  
-  {getMarblesByRangedata && (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-      <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
-        Response: {getMarblesByRangedata}
-      </div>
-    </div>
-  )}
-   <br />
+
+  {/* we will map getMarblesByRangeData here - an array of objects Key (same as Record.name) and Record (object containing all the data) */}
+  {marbleDataVisible && getMarblesByRangedata && getMarblesByRangedata?.map((marble, index) => (
+    <MarbleDataDisplay key={marble.key} marbleName={marble.Record.name} marbleData={marble.Record} />
+  ))}
+
 </div>
 
  
-  
+  <br />  
   
    {/* ------------------------------------------------------------------ */ } 
   
