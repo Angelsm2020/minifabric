@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import axios from "axios";
 import { useAuth0 } from '@auth0/auth0-react';
+import MarbleDataDisplay from "./MarbleDataDispolay";
 
 function App() {
 
@@ -292,15 +293,12 @@ function App() {
   <div style={{ textAlign: 'center' }}>
     <button style={{ backgroundColor: '#007bff', color: 'white', padding: '10px', border: 'none', borderRadius: '5px', cursor: 'pointer' }} onClick={getMarblesByRange}>getMarblesByRange</button>
   </div>
-  
-  {getMarblesByRangedata && (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-      <div style={{ maxWidth: '500px', overflowWrap: 'break-word', backgroundColor: 'white', color: 'black', padding: '10px', border: 'none', borderRadius: '5px', fontSize: '0.5em' }}>
-        Response: {getMarblesByRangedata}
-      </div>
-    </div>
-  )}
-   <br />
+
+  {/* we will map getMarblesByRangeData here - an array of objects Key (same as Record.name) and Record (object containing all the data) */}
+  {getMarblesByRangedata && getMarblesByRangedata.map((marble, index) => (
+    <MarbleDataDisplay key={marble.key} marbleName={marble.Record.name} marbleData={marble.Record} />
+  ))}
+
 </div>
 
  
