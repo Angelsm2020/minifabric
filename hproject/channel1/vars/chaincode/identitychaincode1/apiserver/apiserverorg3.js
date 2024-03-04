@@ -347,7 +347,7 @@ setInterval(() => {
 //})();
 
 // Start the server on port 8080
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 8082;
 app.listen(PORT, 'localhost', () => {
     console.log(`Server is running on port ${PORT}`);
 });
