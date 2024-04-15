@@ -2,3 +2,6 @@
 vars/*
 *.retry
 .vscode
+hproject/channel1/vars/envsettings
+hproject/channel1/vars/run/ccquery.sh
+hproject/channel1/vars/chaincode/identitychaincode1/apiserver/digi-prism/node_modules/.cache/.eslintcache
