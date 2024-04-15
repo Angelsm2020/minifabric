@@ -12,4 +12,4 @@ peer chaincode query -o $ORDERER_ADDRESS --cafile $ORDERER_TLS_CA \
   --tls -C mychannel -n identitychaincode1  \
   --peerAddresses 192.168.86.33:7008 \
   --tlsRootCertFiles /vars/keyfiles/peerOrganizations/org3.digiprism.com/peers/peer2.org3.digiprism.com/tls/ca.crt \
-  -c '{"Args":["readMarble","marble10003"]}'
+  -c '{"Args":["readMarble","marble10105"]}'

@@ -1,5 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const memoryUsage = process.memoryUsage();
+const pidusage = require('pidusage');
+
+
 
 const os = require('os');
 const app = express();
@@ -9,6 +13,10 @@ app.use(bodyParser.json());
 let requestCount = 0;
 let rpm = 0;
 let totalLatency =0;
+
+
+
+
 
 // Setting for Hyperledger Fabric
 const { Wallets, Gateway } = require('fabric-network');
@@ -98,6 +106,8 @@ app.get('/api/readMarble/:name', async function (req, res) {
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
+        setInterval(measureAndPrintCPUUsage, 1000);
+        
         // Disconnect from the gateway.
         await gateway.disconnect();
 
@@ -191,7 +201,9 @@ app.post('/api/initMarble/', async function (req, res) {
         //await contract.submitTransaction('initMarble', req.body.name, req.body.city, req.body.dob, req.body.age, req.body.postcode, req.body.owner, req.body.address, req.body.passport, req.body.ni, req.body.creditscore);
         console.log('Transaction has been submitted');
         res.send('Transaction has been submitted');
-
+        
+        setInterval(measureAndPrintCPUUsage, 1000);
+        
         // Disconnect from the gateway.
         await gateway.disconnect();
 
@@ -346,11 +358,47 @@ setInterval(() => {
 //	console.log(tunnel.url);
 //})();
 
+
+/*let cpuUsage = 0;
+
+setInterval(() => {
+    const cpus = os.cpus();
+    let totalIdle = 0, totalTick = 0;
+
+    cpus.forEach(cpu => {
+        for (type in cpu.times) {
+            totalTick += cpu.times[type];
+        }
+        totalIdle += cpu.times.idle;
+    });
+
+    const idle = totalIdle / cpus.length;
+    const total = totalTick / cpus.length;
+    const usage = 100 - (100 * idle / total);
+
+    console.log(`CPU Usage: ${usage.toFixed(2)}%`);
+    cpuUsage = usage; // Store the CPU usage for further use
+}, 1000); */
+
+
+// Function to measure and print CPU usage
+const measureAndPrintCPUUsage = () => {
+    pidusage(process.pid, (err, stats) => {
+        if (err) {
+            console.error('Error measuring CPU usage:', err);
+            return;
+        }
+        console.log('CPU % Usage:', stats.cpu);
+    });
+};
+
 // Start the server on port 8080
-const PORT = process.env.PORT || 8082;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, 'localhost', () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Memory Usage: ${Math.round(memoryUsage.heapUsed / 1024 / 1024 * 100) / 100} MB`);
 });
+
 
 
 //app.listen(8082);
