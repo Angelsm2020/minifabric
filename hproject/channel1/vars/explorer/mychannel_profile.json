@@ -9,7 +9,7 @@
       "password": "exploreradminpw"
     },
     "enableAuthentication": true,
-    "organization": "org1.digiprism.com"
+    "organization": "org3.digiprism.com"
   },
   "channels": {
     "mychannel": {

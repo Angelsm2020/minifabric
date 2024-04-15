@@ -1,5 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const memoryUsage = process.memoryUsage();
+const pidusage = require('pidusage');
+
+
 
 const os = require('os');
 const app = express();
@@ -8,6 +12,11 @@ app.use(bodyParser.json());
 
 let requestCount = 0;
 let rpm = 0;
+let totalLatency =0;
+
+
+
+
 
 // Setting for Hyperledger Fabric
 const { Wallets, Gateway } = require('fabric-network');
@@ -58,7 +67,7 @@ app.get('/api/getMarblesByRange/:start_key/:end_key', async function (req, res) 
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -97,13 +106,15 @@ app.get('/api/readMarble/:name', async function (req, res) {
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
         res.status(200).json({response: result.toString()});
 
+        setInterval(measureAndPrintCPUUsage, 1000);
+        
         // Disconnect from the gateway.
         await gateway.disconnect();
 
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -147,7 +158,7 @@ app.get('/api/readMarblePrivateDetails/:name', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -190,13 +201,15 @@ app.post('/api/initMarble/', async function (req, res) {
         //await contract.submitTransaction('initMarble', req.body.name, req.body.city, req.body.dob, req.body.age, req.body.postcode, req.body.owner, req.body.address, req.body.passport, req.body.ni, req.body.creditscore);
         console.log('Transaction has been submitted');
         res.send('Transaction has been submitted');
-
+        
+        setInterval(measureAndPrintCPUUsage, 1000);
+        
         // Disconnect from the gateway.
         await gateway.disconnect();
 
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -244,7 +257,7 @@ app.post('/api/transferMarble/', async function (req, res) {
 
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -293,7 +306,7 @@ app.post('/api/deleteMarble/', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -301,6 +314,11 @@ app.post('/api/deleteMarble/', async function (req, res) {
 app.use((req, res, next) => {
     req.startTime = Date.now();
     requestCount++;
+    res.on('finish', () => {
+        const latency = Date.now() - req.startTime;
+        console.log(`Request latency: ${latency}ms`);
+        totalLatency += latency;
+    });
     next();
 });
 
@@ -319,7 +337,7 @@ app.get('/api/metrics', (req, res) => {
     const memoryUsage = process.memoryUsage().rss / 1024 / 1024; // Resident Set Size (RSS) in MB
 
     const metrics = {
-        latency: `${latency}ms`,
+        latency: `${(totalLatency / requestCount).toFixed(2)}ms`, // Average latency
         cpuUsage: `${cpuUsage}%`,
         memoryUsage: `${memoryUsage.toFixed(2)}MB`,
         rpm: rpm
@@ -332,6 +350,7 @@ app.get('/api/metrics', (req, res) => {
 setInterval(() => {
     rpm = requestCount;
     requestCount = 0;
+    totalLatency = 0; // Reset total latency for the new minute
 }, 60000); // Update RPM every minute
 
 //(async () => {
@@ -339,11 +358,47 @@ setInterval(() => {
 //	console.log(tunnel.url);
 //})();
 
-// Start the server on port 8082
-const PORT = process.env.PORT || 8082;
-app.listen(PORT, '192.168.86.33', () => {
+
+/*let cpuUsage = 0;
+
+setInterval(() => {
+    const cpus = os.cpus();
+    let totalIdle = 0, totalTick = 0;
+
+    cpus.forEach(cpu => {
+        for (type in cpu.times) {
+            totalTick += cpu.times[type];
+        }
+        totalIdle += cpu.times.idle;
+    });
+
+    const idle = totalIdle / cpus.length;
+    const total = totalTick / cpus.length;
+    const usage = 100 - (100 * idle / total);
+
+    console.log(`CPU Usage: ${usage.toFixed(2)}%`);
+    cpuUsage = usage; // Store the CPU usage for further use
+}, 1000); */
+
+
+// Function to measure and print CPU usage
+const measureAndPrintCPUUsage = () => {
+    pidusage(process.pid, (err, stats) => {
+        if (err) {
+            console.error('Error measuring CPU usage:', err);
+            return;
+        }
+        console.log('CPU % Usage:', stats.cpu);
+    });
+};
+
+// Start the server on port 8080
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, 'localhost', () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Memory Usage: ${Math.round(memoryUsage.heapUsed / 1024 / 1024 * 100) / 100} MB`);
 });
+
 
 
 //app.listen(8082);
