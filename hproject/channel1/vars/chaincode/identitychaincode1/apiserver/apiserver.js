@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 // Setting for Hyperledger Fabric
 const { Wallets, Gateway } = require('fabric-network');
@@ -53,7 +55,7 @@ app.get('/api/getMarblesByRange/:start_key/:end_key', async function (req, res) 
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -98,7 +100,7 @@ app.get('/api/readMarble/:name', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -142,7 +144,7 @@ app.get('/api/readMarblePrivateDetails/:name', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -191,7 +193,7 @@ app.post('/api/initMarble/', async function (req, res) {
 
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -226,7 +228,11 @@ app.post('/api/transferMarble/', async function (req, res) {
         // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
         // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR10', 'Dave')
         
-        const encodedMarble = btoa(JSON.stringify(req.body))
+        //console.log(req.body);
+        //let { name, owner } = req.body;
+        //name = 'marble' + name;
+        
+        const encodedMarble = btoa(JSON.stringify(req.body));
         //console.log('encodedMarble: ', encodedMarble);
         const result = await contract.createTransaction('transferMarble').setTransient({marble_owner: encodedMarble}).submit();
         
@@ -239,7 +245,7 @@ app.post('/api/transferMarble/', async function (req, res) {
 
     } catch (error) {
         console.error(`Failed to submit transaction: ${error}`);
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
@@ -288,7 +294,7 @@ app.post('/api/deleteMarble/', async function (req, res) {
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         res.status(500).json({error: error});
-        process.exit(1);
+        //process.exit(1);
     }
 });
 
